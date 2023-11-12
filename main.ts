@@ -185,82 +185,74 @@ namespace sonar {
         }
     }
 }
-/*
-四分五裂
-修改自 pxt-servo/servodriver.ts
-加载依赖关系
-“makerobot”： “文件：../makerobot”
-*/
+//% color="#31C7D5" weight=10 icon="\uf1d1"
+namespace makerobot {
+    const PCA9685_ADDRESS = 0x40
+    const MODE1 = 0x00
+    const MODE2 = 0x01
+    const SUBADR1 = 0x02
+    const SUBADR2 = 0x03
+    const SUBADR3 = 0x04
+    const PRESCALE = 0xFE
+    const LED0_ON_L = 0x06
+    const LED0_ON_H = 0x07
+    const LED0_OFF_L = 0x08
+    const LED0_OFF_H = 0x09
+    const ALL_LED_ON_L = 0xFA
+    const ALL_LED_ON_H = 0xFB
+    const ALL_LED_OFF_L = 0xFC
+    const ALL_LED_OFF_H = 0xFD
 
+    const STP_CHA_L = 2047
+    const STP_CHA_H = 4095
 
-% color=“#31C7D5” weight=10 icon=“\uf1d1”
-命名空间 制作机器人 {
-    常量 PCA9685_ADDRESS = 0x40
-    常量 模式1 = 0x00
-    常量 模式2 = 0x01
-    常量 SUBADR1 = 0x02
-    常量 SUBADR2 = 0x03
-    常量 SUBADR3 = 0x04
-    常量 预分频 = 0xFE
-    常量 LED0_ON_L = 0x06
-    常量 LED0_ON_H = 0x07
-    常量 LED0_OFF_L = 0x08
-    常量 LED0_OFF_H = 0x09
-    常量 ALL_LED_ON_L = 0xFA
-    常量 ALL_LED_ON_H = 0xFB
-    常量 ALL_LED_OFF_L = 0xFC
-    常量 ALL_LED_OFF_H = 0xFD
+    const STP_CHB_L = 1
+    const STP_CHB_H = 2047
 
-    常量 STP_CHA_L = 2047
-    常量 STP_CHA_H = 4095
+    const STP_CHC_L = 1023
+    const STP_CHC_H = 3071
 
-    常量 STP_CHB_L = 1
-    常量 STP_CHB_H = 2047
+    const STP_CHD_L = 3071
+    const STP_CHD_H = 1023
 
-    常量 STP_CHC_L = 1023
-    常量 STP_CHC_H = 3071
+    // HT16K33 commands
+    const HT16K33_ADDRESS = 0x70
+    const HT16K33_BLINK_CMD = 0x80
+    const HT16K33_BLINK_DISPLAYON = 0x01
+    const HT16K33_BLINK_OFF = 0
+    const HT16K33_BLINK_2HZ = 1
+    const HT16K33_BLINK_1HZ = 2
+    const HT16K33_BLINK_HALFHZ = 3
+    const HT16K33_CMD_BRIGHTNESS = 0xE0
 
-    常量 STP_CHD_L = 3071
-    常量 STP_CHD_H = 1023
-
-    HT16K33命令
-    常量 HT16K33_ADDRESS = 0x70
-    常量 HT16K33_BLINK_CMD = 0x80
-    常量 HT16K33_BLINK_DISPLAYON = 0x01
-    常量 HT16K33_BLINK_OFF = 0
-    常量 HT16K33_BLINK_2HZ = 1
-    常量 HT16K33_BLINK_1HZ = 2
-    常量 HT16K33_BLINK_HALFHZ = 3
-    常量 HT16K33_CMD_BRIGHTNESS = 0xE0
-
-    出口 枚举 伺服 {
-        S1系列 = 0x01,
-        S2系列 = 0x02,
-        S3系列 = 0x03,
-        S4系列 = 0x04,
-        S5系列 = 0x05,
-        S6系列 = 0x06,
-        S7系列 = 0x07,
-        S8系列 = 0x08
+    export enum Servos {
+        S1 = 0x01,
+        S2 = 0x02,
+        S3 = 0x03,
+        S4 = 0x04,
+        S5 = 0x05,
+        S6 = 0x06,
+        S7 = 0x07,
+        S8 = 0x08
     }
 
-    出口 枚举 电机 {
-        M1A型 = 0x1,
-        M1B型 = 0x2,
-        M2A型 = 0x3,
-        M2B接口 = 0x4
+    export enum Motors {
+        M1A = 0x1,
+        M1B = 0x2,
+        M2A = 0x3,
+        M2B = 0x4
     }
 
-    出口 枚举 步进电机 {
-        M1型 = 0x1,
-        M2型 = 0x2
+    export enum Steppers {
+        M1 = 0x1,
+        M2 = 0x2
     }
 
-    出口 枚举 转弯 {
-        % blockId=“T1B4” block=“1/4”
-        T1B4型 = 90,
-        % blockId=“T1B2” block=“1/2”
-        T1B2型 = 180,
+    export enum Turns {
+        //% blockId="T1B4" block="1/4"
+        T1B4 = 90,
+        //% blockId="T1B2" block="1/2"
+        T1B2 = 180,
         //% blockId="T1B0" block="1"
         T1B0 = 360,
         //% blockId="T2B0" block="2"
@@ -639,33 +631,42 @@ namespace sonar {
             initializedMatrix = true;
         }
         for (let i = 0; i < 16; i++) {
-            马特布夫[我 + 1] = 0;
+            matBuf[i + 1] = 0;
         }
-        matrix显示();
+        matrixShow();
     }
 
-    % blockId=robotbit_ultrasonic block=“超声波|引脚 %pin”
-    % 权重 = 10
-    出口 功能 超声(针:数字引脚):数 {
+    //% blockId=robotbit_ultrasonic block="Ultrasonic|pin %pin"
+    //% weight=10
+    export function Ultrasonic(pin: DigitalPin): number {
 
-        发送脉冲
-        引 脚.setPull(针, PinPullMode.拉无);
-        引 脚.digitalWritePin(针, 0);
-        控制.等待微粒(2);
-        引 脚.digitalWritePin(针, 1);
-        控制.等待微粒(10);
-        引 脚.digitalWritePin(针, 0);
+        // send pulse
+        pins.setPull(pin, PinPullMode.PullNone);
+        pins.digitalWritePin(pin, 0);
+        control.waitMicros(2);
+        pins.digitalWritePin(pin, 1);
+        control.waitMicros(10);
+        pins.digitalWritePin(pin, 0);
 
-        读取脉冲
-        让 d = 引 脚.脉冲输入(针, 脉冲值.高, 25000);
-        让 雷特 = d;
-        筛选器超时峰值
-        如果 (雷特 == 0 && 距离Buf!= 0){
-            雷特 = 距离Buf;
+        // read pulse
+        let d = pins.pulseIn(pin, PulseValue.High, 25000);
+        let ret = d;
+        // filter timeout spikes
+        if (ret == 0 && distanceBuf!= 0){
+            ret = distanceBuf;
         }
-        距离Buf = d;
-        返回 数学.地板(雷特*10/6/58);
+        distanceBuf = d;
+        return Math.floor(ret*10/6/58);
     }
 
 
 }
+
+  
+ 
+
+
+
+
+
+
